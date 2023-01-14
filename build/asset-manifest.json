@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/static/css/main.e96569f2.css",
+    "main.js": "/static/js/main.03c06cd9.js",
+    "static/media/Mountain Landscape.jpeg": "/static/media/Mountain Landscape.49cddb9d75e45c070e4e.jpeg",
+    "static/media/Landschaft mit Gebirgssee, Morgen.jpeg": "/static/media/Landschaft mit Gebirgssee, Morgen.ff894b0b87da500527c3.jpeg",
+    "static/media/Setting.svg": "/static/media/Setting.d607a3a1326d29ac878e9afe639d8150.svg",
+    "static/media/DownArrow.svg": "/static/media/DownArrow.d6258c5019ffd0bd57c2567cfa7ab789.svg",
+    "static/media/downvote.svg": "/static/media/downvote.21e1e1e60facb8774d72a97ce4f793e8.svg",
+    "static/media/upvote.svg": "/static/media/upvote.3b655142b474806f9769323e56583259.svg",
+    "index.html": "/index.html",
+    "static/media/Logo.svg": "/static/media/Logo.2cdc0369ea202194b9f2da5739ce34da.svg",
+    "main.e96569f2.css.map": "/static/css/main.e96569f2.css.map",
+    "main.03c06cd9.js.map": "/static/js/main.03c06cd9.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e96569f2.css",
+    "static/js/main.03c06cd9.js"
+  ]
+}
