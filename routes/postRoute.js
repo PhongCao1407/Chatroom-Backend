@@ -2,11 +2,11 @@ const express = require('express')
 const app = express()
 const router = express.Router()
 const Post = require('../models/post')
-const helper = require('./helper')
+const errorHandler = require('./helper')
 const Thread = require('../models/thread')
 const User = require('../models/user')
+const PostComment = require('../models/postComment')
 
-router.use(helper) //Need to figure this out
 
 //CREATE
 router.post('/', (request, response) => {
@@ -16,9 +16,20 @@ router.post('/', (request, response) => {
         || body.user === undefined || body.thread === undefined) {
         return response.status(400).json({ error: 'content missing' })
     }
+    
+    let user = User.findById(body.user)
+    .then(u => u._id)
+    .catch(error => {
+        console.log('There was an Error with the userID\n')
+        throw new Error(error)
+    })
 
-    let user = User.findById(body.user).then(u => u._id)
-    let thread = Thread.findById(body.thread).then(t => t._id)
+    let thread = Thread.findById(body.thread)
+    .then(t => t._id)
+    .catch(error => {
+        console.log('There was an Error with the threadID\n')
+        throw new Error(error)
+    })
 
     const post = Promise.all([user, thread]).then((values) => {
         user = values[0]
@@ -36,13 +47,21 @@ router.post('/', (request, response) => {
     }).then((post) => {
         post.save().then(savedPost => {
             console.log(user)
+            //Update references of user
             User.findByIdAndUpdate(user, {'$push': {'posts': savedPost._id}}, 
                 (error, success) => console.log(error || success))
+
+            //Update references of thread
             Thread.findByIdAndUpdate(thread, {'$push': {'posts': savedPost._id}}, 
                 (error, success) => console.log(error || success))
+
             response.json(savedPost)
         })
 
+    }).catch((error) => {
+        console.log(error)
+        response.status(400).send({ error: 'There was an Error' })
+        response.end()
     })    
     
 
@@ -82,11 +101,58 @@ router.put('/:id', (request, response, next) => {
 
 //DESTROY
 router.delete('/:id', (request, response, next) => {
-    Post.findByIdAndRemove(request.params.id)
+    //Delete children
+    PostComment.deleteMany({post: request.params.id})
+
+    //Delete references from parents
+    Post.findById(request.params.id).then((p) => {
+        let post = p
+
+        let user = User.findById(post.user)
+        .then(u => u._id)
+        .catch(error => {
+            console.log('There was an Error with the userID\n')
+            throw new Error(error)
+        })
+        
+        let thread = Thread.findById(post.thread)
+        .then(t => t._id)
+        .catch(error => {
+            console.log('There was an Error with the ThreadID\n')
+            throw new Error(error)
+        })
+
+        //Remove reference of deleted post from Parent
+        const removeParent = Promise.all([user, thread]).then((values) => {
+            user = values[0]
+            thread = values[1]
+            User.findByIdAndUpdate(user, {'$pull': {'posts': post._id}}, 
+                (error, success) => console.log(error || success))
+            Thread.findByIdAndUpdate(thread, {'$pull': {'posts': post._id}}, 
+                (error, success) => console.log(error || success))
+        }).catch((error) => {
+            console.log(error)
+            response.status(400).send({ error: 'There was an Error' })
+            response.end()
+        })    
+
+    }).then(() => {
+        //Deleting the post
+        Post.findByIdAndRemove(request.params.id)
         .then(result => {
             response.status(204).end()
         })
         .catch(error => next(error))
+    }).catch((error) => {
+        console.log(error)
+        response.status(400).send({ error: 'There was an Error' })
+        response.end()
+    })
+
+    
+    
 })
+
+router.use(errorHandler)
 
 module.exports = router;

@@ -33,6 +33,7 @@ const postSchema = new mongoose.Schema({
     ],
 })
 
+
 postSchema.set('toJSON', {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString()

@@ -1,4 +1,5 @@
 const errorHandler = (error, request, response, next) => {
+    console.log('here')
     console.error(error.message)
   
     if (error.name === 'CastError') {

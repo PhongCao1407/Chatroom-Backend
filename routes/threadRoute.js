@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const router = express.Router()
 const Thread = require('../models/thread')
+const Post = require('../models/post')
 const helper = require('./helper')
 
 router.use(helper) //Need to figure this out
@@ -59,6 +60,10 @@ router.put('/:id', (request, response, next) => {
 
 //DESTROY
 router.delete('/:id', (request, response, next) => {
+    //Delete associated Post
+    Post.deleteMany({thread: request.params.id})
+
+    //Delete thread
     Thread.findByIdAndRemove(request.params.id)
         .then(result => {
             response.status(204).end()

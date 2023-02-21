@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const User = require('./user')
 
 const url = process.env.MONGODB_URI
 
@@ -16,11 +17,48 @@ const postCommentSchema = new mongoose.Schema({
     commentUpvote: Number,
     commentDownvote: Number,
     date: Date,
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    },
     post: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Post"
     },
 })
+
+postCommentSchema.add({
+    parentComment: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "PostComment"
+    }
+})
+
+postCommentSchema.add({
+    childrenComments: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "PostComment"
+        }
+    ]
+})
+
+
+//Cascading delete up to parent
+postCommentSchema.pre('remove', function(next) {
+    User.put(
+        { postComments : this._id}, 
+        { $pull: { postComments: this._id } },
+        { multi: true })  //if reference exists in multiple documents 
+    .exec();
+    Thread.put(
+        { postComments : this._id}, 
+        { $pull: { postComments: this._id } },
+        { multi: true })  //if reference exists in multiple documents 
+    .exec();
+    next();
+});
+
 
 postCommentSchema.set('toJSON', {
     transform: (document, returnedObject) => {

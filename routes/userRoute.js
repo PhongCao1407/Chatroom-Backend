@@ -2,17 +2,15 @@ const express = require('express')
 const app = express()
 const router = express.Router()
 const User = require('../models/user')
+const Post = require('../models/post')
+const PostComment = require('../models/postComment')
 const helper = require('./helper')
 
-router.use(helper) //Need to figure this out
+router.use(helper)
 
 //CREATE
 router.post('/', (request, response) => {
-    console.log('post')
-    // console.log(request)
-    // console.log(request.body)
     const body = request.body
-    // console.log(body)
 
     if (body.username === undefined || body.email === undefined) {
         return response.status(400).json({ error: 'content missing' })
@@ -68,6 +66,13 @@ router.put('/:id', (request, response, next) => {
 //DESTROY
 router.delete('/:id', (request, response, next) => {
     console.log('delete')
+    //Delete associated Post
+    Post.deleteMany({user: request.params.id})
+
+    //Delete associated Post Comment 
+    PostComment.deleteMany({user: request.params.id})
+
+    //Delete the User
     User.findByIdAndRemove(request.params.id)
         .then(result => {
             response.status(204).end()

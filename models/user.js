@@ -21,7 +21,15 @@ const userSchema = new mongoose.Schema({
             ref: "Post"
         }
     ],
+    postComments: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "PostComment"
+        }
+    ],
 })
+
+
 
 
 userSchema.set('toJSON', {
@@ -31,6 +39,7 @@ userSchema.set('toJSON', {
         delete returnedObject.__v
     }
 })
+
 
 
 module.exports = mongoose.model('User', userSchema)

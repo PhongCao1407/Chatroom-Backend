@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Post = require('./post')
 
 const url = process.env.MONGODB_URI
 
@@ -23,6 +24,8 @@ const threadSchema = new mongoose.Schema({
     ],
 })
 
+
+
 threadSchema.set('toJSON', {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString()
@@ -30,5 +33,8 @@ threadSchema.set('toJSON', {
         delete returnedObject.__v
     }
 })
+
+
+
 
 module.exports = mongoose.model('Thread', threadSchema)
