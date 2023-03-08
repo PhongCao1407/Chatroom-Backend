@@ -6,18 +6,24 @@ const Post = require('../models/post')
 const PostComment = require('../models/postComment')
 const helper = require('./helper')
 
+const bcrypt = require('bcrypt')
+
 router.use(helper)
 
 //CREATE
-router.post('/', (request, response) => {
+router.post('/', async (request, response) => {
     const body = request.body
 
-    if (body.username === undefined || body.email === undefined) {
+    if (body.username === undefined || body.email === undefined || body.passwordHash === undefined) {
         return response.status(400).json({ error: 'content missing' })
     }
 
+    const saltRounds = 10
+    const passwordHash = await bcrypt.hash(body.passwordHash, saltRounds)
+
     const user = new User({
         username: body.username,
+        passwordHash: passwordHash,
         email: body.email,
         date: new Date(),
         posts: [],

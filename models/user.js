@@ -13,6 +13,7 @@ mongoose.connect(url)
 // Schema
 const userSchema = new mongoose.Schema({
     username: String,
+    passwordHash: String,
     email: String,
     date: Date,
     posts: [

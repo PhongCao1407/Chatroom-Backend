@@ -23,6 +23,9 @@ app.use('/api/posts', postRoute)
 const postCommentRoute = require('./routes/postCommentRoute')
 app.use('/api/postcomments', postCommentRoute)
 
+const loginRoute = require('./routes/loginRoute')
+app.use('/api/login', loginRoute)
+
 // Deploy app to Port 3001
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
