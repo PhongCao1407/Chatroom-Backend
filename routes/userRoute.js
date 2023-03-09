@@ -14,17 +14,17 @@ router.use(helper)
 router.post('/', async (request, response) => {
     const body = request.body
 
-    if (body.username === undefined || body.email === undefined || body.passwordHash === undefined) {
+    if (body.username === undefined || body.passwordHash === undefined) {
         return response.status(400).json({ error: 'content missing' })
     }
 
     const saltRounds = 10
+
     const passwordHash = await bcrypt.hash(body.passwordHash, saltRounds)
 
     const user = new User({
         username: body.username,
         passwordHash: passwordHash,
-        email: body.email,
         date: new Date(),
         posts: [],
     })
@@ -58,7 +58,7 @@ router.put('/:id', (request, response, next) => {
 
     const user = {
         username: body.username,
-        email: body.email,
+        passwordHash: body.passwordHash,
         posts: body.posts
     }
 

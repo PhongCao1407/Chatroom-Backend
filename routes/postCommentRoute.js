@@ -5,18 +5,12 @@ const helper = require('./helper')
 const User = require('../models/user')
 const Post = require('../models/post')
 
+const tokenUtils = require('../utils/token')
+
 router.use(helper) //Need to figure this out
 
 const jwt = require('jsonwebtoken')
 
-// User will need a token to carry out the following operation
-const getTokenFrom = request => {
-    const authorization = request.get('authorization')
-    if (authorization && authorization.startsWith('Bearer ')) {
-        return authorization.replace('Bearer ', '')
-    }
-    return null
-}
 
 //CREATE
 router.post('/', (request, response) => {
@@ -27,7 +21,7 @@ router.post('/', (request, response) => {
     }
 
     //Get the token to verify that the user is logged in
-    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+    const decodedToken = jwt.verify(tokenUtils.getTokenFrom(request), process.env.SECRET)
     if (!decodedToken.id) {
         return response.status(401).json({ error: 'token invalid' })
     }
