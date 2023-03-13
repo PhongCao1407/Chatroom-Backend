@@ -22,10 +22,10 @@ router.post('/', (request, response) => {
 
     // A token is needed to create a Thread, but the user won't be link to it
     //Get the token to verify that the user is logged in
-    const decodedToken = jwt.verify(tokenUtils.getTokenFrom(request), process.env.SECRET)  
-    if (!decodedToken.id) {    
-        return response.status(401).json({ error: 'token invalid' }) 
-     }  
+    const decodedToken = jwt.verify(tokenUtils.getTokenFrom(request), process.env.SECRET)
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'token invalid' })
+    }
 
     const thread = new Thread({
         threadName: body.threadName,
@@ -40,6 +40,19 @@ router.post('/', (request, response) => {
 })
 
 //READ
+
+//Get all threads
+router.get('/', (request, response, next) => {
+    Thread.find({})
+        .then((threads) => {
+            response.json(threads)
+            console.log(threads)
+        })
+        .catch(error => next(error))
+})
+
+
+//Get specific threads
 router.get('/:id', (request, response, next) => {
     Thread.findById(request.params.id)
         .then(thread => {
@@ -72,7 +85,7 @@ router.put('/:id', (request, response, next) => {
 //DESTROY
 router.delete('/:id', (request, response, next) => {
     //Delete associated Post
-    Post.deleteMany({thread: request.params.id})
+    Post.deleteMany({ thread: request.params.id })
 
     //Delete thread
     Thread.findByIdAndRemove(request.params.id)
