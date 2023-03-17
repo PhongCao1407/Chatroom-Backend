@@ -33,9 +33,14 @@ router.post('/', (request, response) => {
             console.log('There was an Error with the userID\n')
             throw new Error(error)
         })
-
-    let thread = Thread.findById(body.thread)
-        .then(t => t._id)
+    
+    console.log(body.thread)
+    // Need to get threadID when its passed as name
+    // This is a temporary solution, might need to find a way to rework this with some kind of token in the future
+    let thread = Thread.find({threadName: body.thread})
+        .then(t => {
+            return t[0]._id
+        })
         .catch(error => {
             console.log('There was an Error with the threadID\n')
             throw new Error(error)
