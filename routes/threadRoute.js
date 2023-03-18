@@ -58,7 +58,8 @@ router.get('/', (request, response, next) => {
 //Get specific thread by name 
 router.get('/threadName/:threadName', (request, response, next) => {
     Thread.find({threadName: request.params.threadName})
-        .then(thread => {
+        .then(threadList => {
+            const thread = threadList[0]
             if (thread) {
                 response.json(thread)
             }
