@@ -55,8 +55,21 @@ router.get('/', (request, response, next) => {
         .catch(error => next(error))
 })
 
+//Get specific thread by name 
+router.get('/threadName/:threadName', (request, response, next) => {
+    Thread.find({threadName: request.params.threadName})
+        .then(thread => {
+            if (thread) {
+                response.json(thread)
+            }
+            else {
+                response.status(404).end()
+            }
+        })
+        .catch(error => next(error))
+})
 
-//Get specific threads
+//Get specific thread by id
 router.get('/:id', (request, response, next) => {
     Thread.findById(request.params.id)
         .then(thread => {
