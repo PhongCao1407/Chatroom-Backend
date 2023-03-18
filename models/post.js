@@ -21,10 +21,12 @@ const postSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
+    username: String,
     thread: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Thread"
     },
+    threadName: String,
     postComments: [
         {
             type: mongoose.Schema.Types.ObjectId,

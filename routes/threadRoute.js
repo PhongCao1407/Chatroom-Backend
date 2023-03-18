@@ -45,8 +45,12 @@ router.post('/', (request, response) => {
 router.get('/', (request, response, next) => {
     Thread.find({})
         .then((threads) => {
-            response.json(threads)
-            console.log(threads)
+            if (threads) {
+                response.json(threads)
+            } else {
+                response.status(404).end()
+            }
+            // console.log(threads)
         })
         .catch(error => next(error))
 })

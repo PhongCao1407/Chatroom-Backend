@@ -28,18 +28,19 @@ router.post('/', (request, response) => {
     
 
     let user = User.findById(decodedToken.id)
-        .then(u => u._id)
+        .then(u => {
+            return u
+        })
         .catch(error => {
             console.log('There was an Error with the userID\n')
             throw new Error(error)
         })
     
-    console.log(body.thread)
     // Need to get threadID when its passed as name
     // This is a temporary solution, might need to find a way to rework this with some kind of token in the future
     let thread = Thread.find({threadName: body.thread})
         .then(t => {
-            return t[0]._id
+            return t[0]
         })
         .catch(error => {
             console.log('There was an Error with the threadID\n')
@@ -49,25 +50,29 @@ router.post('/', (request, response) => {
     const post = Promise.all([user, thread]).then((values) => {
         user = values[0]
         thread = values[1]
+        console.log(user)
+        console.log(thread)
         return new Post({
             postTitle: body.postTitle,
             postBody: body.postBody,
             postUpvote: 0,
             postDownvote: 0,
             date: new Date(),
-            user: user,
-            thread: thread,
+            user: user._id,
+            username: user.username,
+            thread: thread._id,
+            threadName: thread.threadName,
             postComments: []
         })
     }).then((post) => {
         post.save().then(savedPost => {
             console.log(user)
             //Update references of user
-            User.findByIdAndUpdate(user, { '$push': { 'posts': savedPost._id } },
+            User.findByIdAndUpdate(user._id, { '$push': { 'posts': savedPost._id } },
                 (error, success) => console.log(error || success))
 
             //Update references of thread
-            Thread.findByIdAndUpdate(thread, { '$push': { 'posts': savedPost._id } },
+            Thread.findByIdAndUpdate(thread._id, { '$push': { 'posts': savedPost._id } },
                 (error, success) => console.log(error || success))
 
             response.json(savedPost)
@@ -83,6 +88,21 @@ router.post('/', (request, response) => {
 })
 
 //READ
+
+//Get all posts
+router.get('/', (request, response, next) => {
+    Post.find({})
+        .then(posts => {
+            if (posts) {
+                response.json(posts)
+            } else {
+                response.status(404).end()
+            }
+        })
+        .catch(error => next(error))
+})
+
+//Get specific post
 router.get('/:id', (request, response, next) => {
     Post.findById(request.params.id)
         .then(post => {
