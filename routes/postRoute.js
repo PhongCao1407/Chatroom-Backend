@@ -21,11 +21,11 @@ router.post('/', (request, response) => {
     }
 
     //Get the token to verify that the user is logged in
-    const decodedToken = jwt.verify(tokenUtils.getTokenFrom(request), process.env.SECRET)  
-    if (!decodedToken.id) {    
-        return response.status(401).json({ error: 'token invalid' }) 
-     }  
-    
+    const decodedToken = jwt.verify(tokenUtils.getTokenFrom(request), process.env.SECRET)
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'token invalid' })
+    }
+
 
     let user = User.findById(decodedToken.id)
         .then(u => {
@@ -35,10 +35,10 @@ router.post('/', (request, response) => {
             console.log('There was an Error with the userID\n')
             throw new Error(error)
         })
-    
+
     // Need to get threadID when its passed as name
     // This is a temporary solution, might need to find a way to rework this with some kind of token in the future
-    let thread = Thread.find({threadName: body.thread})
+    let thread = Thread.find({ threadName: body.thread })
         .then(t => {
             return t[0]
         })
@@ -95,6 +95,19 @@ router.get('/', (request, response, next) => {
         .then(posts => {
             if (posts) {
                 response.json(posts)
+            } else {
+                response.status(404).end()
+            }
+        })
+        .catch(error => next(error))
+})
+
+//Get all posts for a given thread
+router.get('/threadName/:threadName', (request, response, next) => {
+    Post.find({ threadName: request.params.threadName })
+        .then(postList => {
+            if (postList) {
+                response.json(postList)
             } else {
                 response.status(404).end()
             }
