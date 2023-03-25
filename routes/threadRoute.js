@@ -14,7 +14,6 @@ const jwt = require('jsonwebtoken')
 //CREATE
 router.post('/', (request, response) => {
     const body = request.body
-    console.log(body)
 
     if (body.threadName === undefined || body.threadDescription === undefined) {
         return response.status(400).json({ error: 'content missing' })
@@ -50,7 +49,6 @@ router.get('/', (request, response, next) => {
             } else {
                 response.status(404).end()
             }
-            // console.log(threads)
         })
         .catch(error => next(error))
 })

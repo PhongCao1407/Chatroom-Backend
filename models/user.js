@@ -29,8 +29,7 @@ const userSchema = new mongoose.Schema({
     ],
 })
 
-
-
+userSchema.index({username: 1}, {unique: true})
 
 userSchema.set('toJSON', {
     transform: (document, returnedObject) => {

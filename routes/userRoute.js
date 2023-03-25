@@ -31,6 +31,8 @@ router.post('/', async (request, response) => {
 
     user.save().then(savedUser => {
         response.json(savedUser)
+    }).catch((error) => {
+        return response.status(400).json({ error: 'error creating user' })
     })
 })
 
@@ -38,8 +40,6 @@ router.post('/', async (request, response) => {
 
 //Example request: http://localhost:3001/api/users/<id>
 router.get('/:id', (request, response, next) => {
-    console.log(request.params)
-
     User.findById(request.params.id)
         .then(user => {
             if (user) {
@@ -53,7 +53,6 @@ router.get('/:id', (request, response, next) => {
 
 // UPDATE
 router.put('/:id', (request, response, next) => {
-    console.log('put')
     const body = request.body
 
     const user = {
@@ -71,7 +70,6 @@ router.put('/:id', (request, response, next) => {
 
 //DESTROY
 router.delete('/:id', (request, response, next) => {
-    console.log('delete')
     //Delete associated Post
     Post.deleteMany({user: request.params.id})
 

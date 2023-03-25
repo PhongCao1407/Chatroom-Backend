@@ -50,8 +50,7 @@ router.post('/', (request, response) => {
     const post = Promise.all([user, thread]).then((values) => {
         user = values[0]
         thread = values[1]
-        console.log(user)
-        console.log(thread)
+
         return new Post({
             postTitle: body.postTitle,
             postBody: body.postBody,
@@ -66,7 +65,6 @@ router.post('/', (request, response) => {
         })
     }).then((post) => {
         post.save().then(savedPost => {
-            console.log(user)
             //Update references of user
             User.findByIdAndUpdate(user._id, { '$push': { 'posts': savedPost._id } },
                 (error, success) => console.log(error || success))
